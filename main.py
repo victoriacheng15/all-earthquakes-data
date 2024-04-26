@@ -1,29 +1,33 @@
-import json
-from utils.get_api_data import fetch_earthquakes
-from utils.time import get_utc_time
-from utils.format_data import to_dict
+import logging
+from utils.db_connect import Postgres
+from utils.get_api_data import get_earthquake_data
 
 
-def get_earthquake_data():
-    all_data = []
-    data = fetch_earthquakes()
-    # print(json.dumps(data["features"][0], indent=2))
+def main():
+    logging.basicConfig(level=logging.INFO)
+    postgres = Postgres()
 
-    for feature in data["features"]:
-        id = feature["id"]
-        properties = feature["properties"]
-        place = properties["place"]
-        mag = "{:.1f}".format(properties["mag"])
-        latitude = feature["geometry"]["coordinates"][1]
-        longitude = feature["geometry"]["coordinates"][0]
-        time = properties["time"]
-        utc_time = get_utc_time(time)
+    try:
+        with postgres.connect() as connection:
+            logging.info(" ====> starting the process...")
+            print()
 
-        event_data = to_dict(id, place, mag, latitude, longitude, utc_time)
-        all_data.append(event_data)
+            api_data = get_earthquake_data()
+            db_ids = postgres.get_all_db_data(connection)
 
-    print(all_data[0])
-    return all_data
+            for data in api_data:
+                if data["id"] not in db_ids:
+                    postgres.insert_data(connection, data)
+
+            print()
+            logging.info(" ====> the process is complete...")
+            print()
+
+    except Exception as e:
+        logging.error(f"Error: {e}")
+    finally:
+        postgres.close()
 
 
-get_earthquake_data()
+if __name__ == "__main__":
+    main()
