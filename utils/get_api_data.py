@@ -20,7 +20,7 @@ def fetch_earthquakes_api():
         return response.json()
 
 
-def get_earthquake_data():
+def get_earthquakes_data():
     all_data = []
     data = fetch_earthquakes_api()
 
