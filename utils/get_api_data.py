@@ -4,7 +4,7 @@ from utils.time import get_utc_time
 from utils.format_data import to_dict
 
 
-def fetch_earthquakes():
+def fetch_earthquakes_api():
     url = "https://earthquake.usgs.gov/fdsnws/event/1/query"
 
     params = {
@@ -22,7 +22,7 @@ def fetch_earthquakes():
 
 def get_earthquake_data():
     all_data = []
-    data = fetch_earthquakes()
+    data = fetch_earthquakes_api()
 
     for feature in data["features"]:
         id = feature["id"]
