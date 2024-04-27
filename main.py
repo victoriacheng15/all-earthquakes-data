@@ -1,6 +1,6 @@
 import logging
 from utils.db_connect import Postgres
-from utils.get_api_data import get_earthquake_data
+from utils.get_api_data import get_earthquakes_data
 
 
 def main():
@@ -12,7 +12,7 @@ def main():
             logging.info(" ====> starting the process...")
             print()
 
-            api_data = get_earthquake_data()
+            api_data = get_earthquakes_data()
             db_ids = postgres.get_all_db_data(connection)
 
             for data in api_data:
