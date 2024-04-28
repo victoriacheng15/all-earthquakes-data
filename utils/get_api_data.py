@@ -1,7 +1,6 @@
 import requests
-from utils.time import utc_starttime, utc_today
-from utils.time import get_utc_time
-from utils.format_data import to_dict
+from utils.time import get_utc_time, utc_starttime, utc_today
+from utils.settings import set_city_country
 
 
 def fetch_earthquakes_api():
@@ -20,21 +19,31 @@ def fetch_earthquakes_api():
         return response.json()
 
 
+
 def get_earthquakes_data():
     all_data = []
     data = fetch_earthquakes_api()
 
     for feature in data["features"]:
-        id = feature["id"]
         properties = feature["properties"]
         place = properties["place"]
-        mag = "{:.1f}".format(properties["mag"])
-        latitude = feature["geometry"]["coordinates"][1]
-        longitude = feature["geometry"]["coordinates"][0]
+        city, country = set_city_country(place)
         time = properties["time"]
-        utc_time = get_utc_time(time)
 
-        event_data = to_dict(id, place, mag, latitude, longitude, utc_time)
+        event_data = {
+            "id": properties["code"],
+            "event_id": feature["id"],
+            "place": properties["place"],
+            "city": city,
+            "country": country,
+            "magnitude": "{:.1f}".format(properties["mag"]),
+            "latitude": feature["geometry"]["coordinates"][1],
+            "longitude": feature["geometry"]["coordinates"][0],
+            "depth": feature["geometry"]["coordinates"][2],
+            "utc_time": get_utc_time(time),
+            "url": properties["url"],
+            "details": properties["detail"],
+        }
         all_data.append(event_data)
 
     return all_data
