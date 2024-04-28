@@ -31,7 +31,7 @@ def get_earthquakes_data():
         time = properties["time"]
 
         event_data = {
-            "id": properties["code"],
+            "code": properties["code"],
             "event_id": feature["id"],
             "place": properties["place"],
             "city": city,

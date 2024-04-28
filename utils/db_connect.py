@@ -1,21 +1,32 @@
 import os, logging
+import psycopg2
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
-from sqlalchemy.sql import text
 
 load_dotenv()
+
+POSTGRES_USER = os.environ.get("POSTGRES_USER")
+POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD")
 POSTGRES_DB = os.environ.get("POSTGRES_DB")
+POSTGRES_HOST = os.environ.get("POSTGRES_HOST")
+POSTGRES_PORT = os.environ.get("POSTGRES_PORT")
 
 
 class Postgres:
     def __init__(self):
-        self.engine = create_engine(POSTGRES_DB)
+        self.conn = psycopg2.connect(
+            user=POSTGRES_USER,
+            password=POSTGRES_PASSWORD,
+            database=POSTGRES_DB,
+            host=POSTGRES_HOST,
+            port=POSTGRES_PORT
+        )
+        self.cursor = self.conn.cursor()
         self.logger = logging.getLogger(__name__)
 
     def connect(self):
         try:
             self.logger.info("Connecting to database...")
-            return self.engine.connect()
+            return self.conn
         except Exception as e:
             self.logger.error(f"Failed to connect to database: {e}")
             return None
@@ -23,20 +34,36 @@ class Postgres:
     def close(self):
         try:
             self.logger.info("Closing database connection...")
-            self.engine.dispose()
+            self.cursor.close()
+            self.conn.close()
             self.logger.info("Database connection closed.")
         except Exception as e:
             self.logger.error(f"Error while closing database connection: {e}")
 
-    def get_all_db_data(self, connection):
-        result = connection.execute(text("""SELECT id from earthquakes"""))
-        return tuple(row[0] for row in result.fetchall())
+    def get_all_db_data(self):
+        self.cursor.execute("SELECT code from raw_data;")
+        result = self.cursor.fetchall()
+        return result
 
-    def insert_data(self, connection, data):
+    def insert_data(self, data):
         query = """
-            INSERT INTO earthquakes (id, place, magnitude, latitude, longitude, utc_time)
-            VALUES (:id, :place, :magnitude, :latitude, :longitude, :utc_time)
+            INSERT INTO raw_data (code, event_id, place, city, country, magnitude, latitude, longitude, depth,utc_time, url, details)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
-        self.logger.info(f" ==> inserting data: {data.get('id')} <==")
-        connection.execute(text(query), data)
-        connection.commit()
+        self.logger.info(f" ==> inserting data: {data.get('code')} <==")
+        
+        self.cursor.execute(query, (
+            data.get('code'),
+            data.get('event_id'),
+            data.get('place'),
+            data.get('city'),
+            data.get('country'),
+            data.get('magnitude'),
+            data.get('latitude'),
+            data.get('longitude'),
+            data.get('depth'),
+            data.get('utc_time'),
+            data.get('url'),
+            data.get('details'),
+        ))
+        self.conn.commit()
