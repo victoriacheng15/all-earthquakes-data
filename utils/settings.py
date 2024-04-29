@@ -1,5 +1,10 @@
 import re
 
+
+filename = "earthquakes_data.csv"
+header = ["code", "event_id", "place", "city", "country", "magnitude", "latitude", "longitude", "depth", "utc_time", "url", "details"]
+
+
 states = [
     "Alabama", "Alaska", "Arizona", "Arkansas", "California",
     "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
