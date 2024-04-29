@@ -40,18 +40,16 @@ class Postgres:
         except Exception as e:
             self.logger.error(f"Error while closing database connection: {e}")
 
-    def get_all_db_data(self):
+    def get_existing_db_codes(self):
         self.cursor.execute("SELECT code from raw_data;")
         result = self.cursor.fetchall()
-        return result
+        return set([code for code, in result])
 
     def insert_data(self, data):
         query = """
             INSERT INTO raw_data (code, event_id, place, city, country, magnitude, latitude, longitude, depth,utc_time, url, details)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
-        """
-        self.logger.info(f" ==> inserting data: {data.get('code')} <==")
-        
+        """        
         self.cursor.execute(query, (
             data.get('code'),
             data.get('event_id'),
