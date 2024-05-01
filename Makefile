@@ -1,4 +1,4 @@
-.PHONY: init format csv db
+.PHONY: init format csv db exec
 
 init:
 	python3 -m venv env
@@ -13,3 +13,6 @@ csv:
 
 db:
 	python3 main.py db
+
+exec:
+	docker exec -it earthquakes-postgres psql -U postgres
