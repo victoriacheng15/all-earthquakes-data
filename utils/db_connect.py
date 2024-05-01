@@ -18,7 +18,7 @@ class Postgres:
             password=POSTGRES_PASSWORD,
             database=POSTGRES_DB,
             host=POSTGRES_HOST,
-            port=POSTGRES_PORT
+            port=POSTGRES_PORT,
         )
         self.cursor = self.conn.cursor()
         self.logger = logging.getLogger(__name__)
@@ -49,19 +49,22 @@ class Postgres:
         query = """
             INSERT INTO raw_data (code, event_id, place, city, country, magnitude, latitude, longitude, depth,utc_time, url, details)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
-        """        
-        self.cursor.execute(query, (
-            data.get('code'),
-            data.get('event_id'),
-            data.get('place'),
-            data.get('city'),
-            data.get('country'),
-            data.get('magnitude'),
-            data.get('latitude'),
-            data.get('longitude'),
-            data.get('depth'),
-            data.get('utc_time'),
-            data.get('url'),
-            data.get('details'),
-        ))
+        """
+        self.cursor.execute(
+            query,
+            (
+                data.get("code"),
+                data.get("event_id"),
+                data.get("place"),
+                data.get("city"),
+                data.get("country"),
+                data.get("magnitude"),
+                data.get("latitude"),
+                data.get("longitude"),
+                data.get("depth"),
+                data.get("utc_time"),
+                data.get("url"),
+                data.get("details"),
+            ),
+        )
         self.conn.commit()

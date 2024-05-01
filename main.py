@@ -5,6 +5,7 @@ from utils.actions import csv_action, db_action
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def main(action):
     if action == "csv":
         csv_action()
