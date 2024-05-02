@@ -65,21 +65,22 @@ us_states = {
     "WA": "Washington",
     "WV": "West Virginia",
     "WI": "Wisconsin",
-    "WY": "Wyoming"
+    "WY": "Wyoming",
 }
 
+
 def set_city_country(place):
-    split_place = place.split("of " )
+    split_place = place.split("of ")
 
     for abbr, state in us_states.items():
         if abbr in place or state in place:
             split_place[-1] = split_place[-1].replace(abbr, state).strip()
-    
+
     cleaned_place = "of ".join(split_place)
     location = cleaned_place.split("of ")[-1]
 
-    city = location.split(', ')[0]
-    country = location.split(', ')[-1]
+    city = location.split(", ")[0]
+    country = location.split(", ")[-1]
 
     city = f"{city}, {country}" if country in us_states.values() else city
     country = "USA" if country in us_states.values() else country
