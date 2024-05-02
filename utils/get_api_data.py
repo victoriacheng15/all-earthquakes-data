@@ -26,13 +26,13 @@ def get_earthquakes_data():
     for feature in data["features"]:
         properties = feature["properties"]
         place = properties["place"]
-        city, country = set_city_country(place)
+        cleaned_place, city, country = set_city_country(place)
         time = properties["time"]
 
         event_data = {
             "code": properties["code"],
             "event_id": feature["id"],
-            "place": properties["place"],
+            "place": cleaned_place,
             "city": city,
             "country": country,
             "magnitude": "{:.1f}".format(properties["mag"]),
