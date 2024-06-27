@@ -70,10 +70,10 @@ us_states = {
 
 
 def set_city_country(place):
-    split_place = place.split("of ")
+    split_place = place.split("of ") if place is not None else ""
 
     for abbr, state in us_states.items():
-        if abbr in place or state in place:
+        if place is not None and (abbr in place or state in place):
             split_place[-1] = split_place[-1].replace(abbr, state).strip()
 
     cleaned_place = "of ".join(split_place)
